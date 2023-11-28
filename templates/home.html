@@ -8,20 +8,39 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
+    // SetInterval() to get it to generate during an interval
       function generate_time_graph(selection) {
           $.getJSON({
-              url: "/callback", data: { 'data': selection }, success: function (result) {
+              url: "/time_graph", data: { 'data': selection }, success: function (result) {
                   result.config = {responsive: true};
                   Plotly.react('time_domain_graph', result, {});;
               }
           });
       }
 
-      function cb(selection) {
+      function generate_fft_graph(selection) {
           $.getJSON({
-              url: "/callback", data: { 'data': selection }, success: function (result) {
+              url: "/fft_graph", data: { 'data': selection }, success: function (result) {
                   result.config = {responsive: true};
-                  Plotly.react('time_domain_graph', result, {});;
+                  Plotly.react('fft_graph', result, {});;
+              }
+          });
+      }
+
+      function generate_psd_graph(selection) {
+          $.getJSON({
+              url: "/psd_graph", data: { 'data': selection }, success: function (result) {
+                  result.config = {responsive: true};
+                  Plotly.react('psd_graph', result, {});;
+              }
+          });
+      }
+
+      function generate_compare_graph(selection, compare_value) {
+          $.getJSON({
+              url: "/compare_graph", data: { 'data': selection, "compare_value": compare_value }, success: function (result) {
+                  result.config = {responsive: true};
+                  Plotly.react('compare_graph', result, {});;
               }
           });
       }
@@ -79,7 +98,7 @@ h2{
     <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
-          <a data-toggle="collapse" href="#realtime">Real-Time Data</a>
+          <a data-toggle="collapse" href="#realtime">Real-Time Data - Probably Remove</a>
         </h4>
       </div>
       <div id="realtime" class="panel-collapse collapse">
@@ -174,6 +193,26 @@ h2{
       <div id="compare" class="panel-collapse collapse">
         <!-- Compare Information-->
         <div class="panel-body">
+          <select name="compare_panel" id="compare_panel" onchange="generate_compare_graph('1600', this.value)">
+            <option value="a_x_t">Acceleration X Time</option>
+            <option value="a_y_t">Acceleration Y Time</option>
+            <option value="a_z_t">Acceleration Z Time</option>
+            <option value="g_x_t">Gyro X Time</option>
+            <option value="g_y_t">Gyro Y Time</option>
+            <option value="g_z_t">Gyro Z Time</option>
+            <option value="a_x_fft">Acceleration X FFT</option>
+            <option value="a_y_fft">Acceleration Y FFT</option>
+            <option value="a_z_fft">Acceleration Z FFT</option>
+            <option value="g_x_fft">Gyro X FFT</option>
+            <option value="g_y_fft">Gyro Y FFT</option>
+            <option value="g_z_fft">Gyro Z FFT</option>
+            <option value="a_x_psd">Acceleration X PSD</option>
+            <option value="a_y_psd">Acceleration Y PSD</option>
+            <option value="a_z_psd">Acceleration Z PSD</option>
+            <option value="g_x_psd">Gyro X PSD</option>
+            <option value="g_y_psd">Gyro Y PSD</option>
+            <option value="g_z_psd">Gyro Z PSD</option>
+          </select>
           <div id="compare_graph"></div>
         </div>
       </div>
@@ -182,7 +221,11 @@ h2{
 </div>
 
 <script type="text/javascript">
-  cb("1600")
+  generate_time_graph("1600");
+  generate_fft_graph("1600");
+  generate_psd_graph("1600");
+  generate_compare_graph("1600","a_x_t")
+
   function resize_graph() {
     console.log("working");
     window.dispatchEvent(new Event('resize'));
