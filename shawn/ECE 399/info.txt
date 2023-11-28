@@ -1,0 +1,8 @@
+import plotly.express as px
+
+@app.route("/graph_test")
+def graph_test():
+    # Read saved data from DB or file or ...
+    df = parse_data(raw_data, freq)
+    fig = px.line(df, x=df.columns[-1], y=df.columns[0:-1], title="Time Domain")
+    return fig.to_html(include_plotlyjs="cdn")
