@@ -100,10 +100,13 @@ h2{
   <freq>
     <h3>Current Frequency: <span id="current_frequency"></span> Hz</h3>
   </freq>
-  <input type="text" id="freq" name="freq" onchange="update_graphs(this.value)">
+  <select name="freq" id="freq" onchange="update_graphs(this.value)">
+    <option value="1600">1600Hz</option>
+    <option value="100">100Hz</option>
+  </select>
   <br>
   <br>
-  <br>
+
 
   <!-- Real-Time Data
   <div class="panel-group">
