@@ -37,7 +37,7 @@ def upload(freq, end_time=None):
     raw_data = request.data
     # Store most recent data 10 second chunk
     # Store to a file or sqlite unparsed
-    with open("data/sample_" + str(freq) + ".raw", "wb") as file:
+    with open("data/reference_sample_" + str(freq) + ".raw", "wb") as file:
         file.write(raw_data)
 
     # TODO save raw (or parsed) data
@@ -45,9 +45,15 @@ def upload(freq, end_time=None):
     
     return '', 200
 
-def parse_data(freq):
+def parse_data(freq, reference = False):
     # TODO avg for each column?
-    with open("data/sample_" + str(freq) + ".raw", "rb") as file:
+    # If new sample data
+    if not reference:
+        data_path = "data/sample_"
+    else:
+        data_path = "data/reference_sample_"
+
+    with open(data_path + str(freq) + ".raw", "rb") as file:
         raw_data = file.read()
 
     
@@ -65,8 +71,12 @@ def parse_data(freq):
         
         data.append([gf*gyro_x, gf*gyro_y, gf*gyro_z, af*accel_x, af*accel_y, af*accel_z, af*accel_mag, t])
     
-    #return data
-    return pd.DataFrame(data, columns=["Gyro X [rad/s]", "Gyro Y [rad/s]", "Gyro Z [rad/s]", "Accel X [g]", "Accel Y [g]", "Accel Z [g]", "Accel Mag [g]", "Time [s]"])
+    columns_index_names = ["Gyro X [rad/s]", "Gyro Y [rad/s]", "Gyro Z [rad/s]", "Accel X [g]", "Accel Y [g]", "Accel Z [g]", "Accel Mag [g]", "Time [s]"]
+    #If new sample data
+    if reference:
+        columns_index_names = [x + " Reference" if "Time" not in x else x for x in columns_index_names]
+    return pd.DataFrame(data, columns=columns_index_names)
+
 
 @app.route('/time_graph', methods=['POST', 'GET'])
 def time_graph():
@@ -136,6 +146,9 @@ def select_compare_graph(freq = "1600", compare_value = "a_x_t"):
 def generate_compare_time_graph(freq, compare_value):
     # Parse data
     df = parse_data(freq)
+    # Parse reference data
+    df_reference = parse_data(freq, reference = True)
+
     # Get column index for the corresponding compare_value
     column_name_index = None
     for col_index, col in enumerate(df.columns):
@@ -145,8 +158,7 @@ def generate_compare_time_graph(freq, compare_value):
 
     # TODO Open saved data file and display it with the current sample values
 
-    # Generate graph with selected name
-    fig = px.line(df, x=df.columns[-1], y=df.columns[column_name_index], title="Time Domain")
+    fig = px.line(pd.concat([df, df_reference]), x=df.columns[-1], y=[df.columns[column_name_index],df_reference.columns[column_name_index]], title="Time Domain")
 
     graph_JSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return graph_JSON
@@ -154,6 +166,7 @@ def generate_compare_time_graph(freq, compare_value):
 def generate_compare_fft_graph(freq, compare_value, fs = 1):
     # Parse data
     df = parse_data(freq)
+    df_reference = parse_data(freq, reference = True)
     # Get column index for the corresponding compare_value
     column_name_index = None
     for col_index, col in enumerate(df.columns):
@@ -165,17 +178,25 @@ def generate_compare_fft_graph(freq, compare_value, fs = 1):
 
     # Generate graph with selected name
     data = df.to_numpy()
+    data_reference = df_reference.to_numpy()
+    
 
     fft_data = np.transpose(np.fft.rfft(data[:, :-1], axis=0, norm="forward")) # Display traces for all params (normalized by length)
     fft_data = np.abs(fft_data) # Magnitude
 
+    fft_data_reference = np.transpose(np.fft.rfft(data_reference[:, :-1], axis=0, norm="forward")) # Display traces for all params (normalized by length)
+    fft_data_reference = np.abs(fft_data_reference) # Magnitude
+
     # Double non-DC components to account for neg frequencies
     fft_data[:, 1:] *= 2
+    fft_data_reference[:, 1:] *= 2
 
     fft_x = np.fft.rfftfreq(len(data), 1/fs)
     
     fft_df = pd.DataFrame({df.columns[i]: fft_data[i] for i in range(len(fft_data))})
-    fft_fig = px.line(fft_df, x=fft_x, y=fft_df.columns[column_name_index], labels={"x": "Freq [Hz]"}, title="|FFT|")
+    fft_df_reference = pd.DataFrame({df_reference.columns[i]: fft_data_reference[i] for i in range(len(fft_data_reference))})
+    #fft_fig = px.line(pd.concat([fft_df, fft_df_reference]), x=fft_x, y=[fft_df.columns[column_name_index],fft_df_reference.columns[column_name_index]] , labels={"x": "Freq [Hz]"}, title="|FFT|")
+    fft_fig = px.line(pd.concat([fft_df, fft_df_reference], axis=1), x=fft_x, y=[fft_df.columns[column_name_index], fft_df_reference.columns[column_name_index]] , labels={"x": "Freq [Hz]"}, title="|FFT|")
     graph_JSON = json.dumps(fft_fig, cls=plotly.utils.PlotlyJSONEncoder)
     return graph_JSON
 
@@ -183,6 +204,7 @@ def generate_compare_fft_graph(freq, compare_value, fs = 1):
 def generate_compare_psd_graph(freq, compare_value, fs = 1):
     # Parse data
     df = parse_data(freq)
+    df_reference = parse_data(freq, reference = True)
     # Get column index for the corresponding compare_value
     column_name_index = None
     for col_index, col in enumerate(df.columns):
@@ -193,22 +215,25 @@ def generate_compare_psd_graph(freq, compare_value, fs = 1):
     # TODO Open saved data file and display it with the current sample values
 
     # Generate graph with selected name
-    df = parse_data(freq)
     data = df.to_numpy()
+    data_reference = df_reference.to_numpy()
     # PSD (Welch's method) for the desired bin width
     #bin_width = 0.05 # The desired frequency bin width in Hz (must be >= freq_step)
     freq_step = fs/len(data)
     bin_width = freq_step*5
     psd_x, psd_data = signal.welch(data[:, :-1], fs=fs, nperseg=round(fs/bin_width), axis=0)
+    psd_x_reference, psd_data_reference = signal.welch(data_reference[:, :-1], fs=fs, nperseg=round(fs/bin_width), axis=0)
     psd_data = np.transpose(psd_data)
+    psd_data_reference = np.transpose(psd_data_reference)
 
     # Skip DC point
     #psd_x = psd_x[1:]
     #psd_data = psd_data[:, 1:]
 
     psd_df = pd.DataFrame({df.columns[i]: psd_data[i] for i in range(len(psd_data))})
+    psd_df_reference = pd.DataFrame({df_reference.columns[i]: psd_data_reference[i] for i in range(len(psd_data_reference))})
 
-    psd_fig = px.line(psd_df, x=psd_x, y=psd_df.columns[column_name_index], labels={"x": "Freq [Hz]"}, title="PSD")
+    psd_fig = px.line(pd.concat([psd_df, psd_df_reference], axis=1), x=psd_x, y=[psd_df.columns[column_name_index],psd_df_reference.columns[column_name_index]], labels={"x": "Freq [Hz]"}, title="PSD")
     psd_fig.update_layout(yaxis_title="[value^2/Hz]") # Needs to be separate
 
     graph_JSON = json.dumps(psd_fig, cls=plotly.utils.PlotlyJSONEncoder)
