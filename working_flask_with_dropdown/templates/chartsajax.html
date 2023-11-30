@@ -6,8 +6,8 @@
     <script>
         function cb(selection) {
             $.getJSON({
-                url: "/compare", data: { 'data': selection }, success: function (result) {
-                    Plotly.react('compare', result, {});;
+                url: "/callback", data: { 'data': selection }, success: function (result) {
+                    Plotly.react('chart', result, {});;
                 }
             });
         }
@@ -18,13 +18,8 @@
     <h1>GDP per Capita Over Time</h1>
     <h2>Choose your country</h2>
     <p>Make sure you spell it correctly with capital letter(s), e.g. United Kingdom</p>
-    <select name="cars" id="cars" onchange="cb(this.value)">
-        <option value="United States">United States</option>
-        <option value="Canada">Canada</option>
-        <option value="United Kingdom">United Kingdom</option>
-    </select>
     <input type="text" id="fname" name="fname" onchange="cb(this.value)">
-    <div id="compare" class="chart"></div>
+    <div id="chart" class="chart"></div>
     <div id="png_chart"></div>
 </body>
 

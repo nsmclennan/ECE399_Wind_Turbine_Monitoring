@@ -192,6 +192,11 @@ def generate_compare_fft_graph(freq, compare_value, fs = 1):
     fft_data_reference[:, 1:] *= 2
 
     fft_x = np.fft.rfftfreq(len(data), 1/fs)
+
+    # Skip DC point - MAKES GRAPH READABLE MAY NOT BE VALID
+    fft_x = fft_x[1:]
+    fft_data = fft_data[:, 1:]
+    fft_data_reference = fft_data_reference[:, 1:]
     
     fft_df = pd.DataFrame({df.columns[i]: fft_data[i] for i in range(len(fft_data))})
     fft_df_reference = pd.DataFrame({df_reference.columns[i]: fft_data_reference[i] for i in range(len(fft_data_reference))})
@@ -226,9 +231,10 @@ def generate_compare_psd_graph(freq, compare_value, fs = 1):
     psd_data = np.transpose(psd_data)
     psd_data_reference = np.transpose(psd_data_reference)
 
-    # Skip DC point
-    #psd_x = psd_x[1:]
-    #psd_data = psd_data[:, 1:]
+    # Skip DC point - MAKES GRAPH READABLE MAY NOT BE VALID
+    psd_x = psd_x[1:]
+    psd_data = psd_data[:, 1:]
+    psd_data_reference = psd_data_reference[:, 1:]
 
     psd_df = pd.DataFrame({df.columns[i]: psd_data[i] for i in range(len(psd_data))})
     psd_df_reference = pd.DataFrame({df_reference.columns[i]: psd_data_reference[i] for i in range(len(psd_data_reference))})

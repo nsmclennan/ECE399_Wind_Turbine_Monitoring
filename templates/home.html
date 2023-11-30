@@ -8,38 +8,38 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
-    //let frequency = "1600"
+    let frequency = "1600"
     // SetInterval() to get it to generate during an interval
-      function generate_time_graph(selection) {
+      function generate_time_graph(selection, freq) {
           $.getJSON({
-              url: "/time_graph", data: { 'data': selection }, success: function (result) {
+              url: "/time_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
                   result.config = {responsive: true};
                   Plotly.react('time_domain_graph', result, {});;
               }
           });
       }
 
-      function generate_fft_graph(selection) {
+      function generate_fft_graph(selection, freq) {
           $.getJSON({
-              url: "/fft_graph", data: { 'data': selection }, success: function (result) {
+              url: "/fft_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
                   result.config = {responsive: true};
                   Plotly.react('fft_graph', result, {});;
               }
           });
       }
 
-      function generate_psd_graph(selection) {
+      function generate_psd_graph(selection, freq) {
           $.getJSON({
-              url: "/psd_graph", data: { 'data': selection }, success: function (result) {
+              url: "/psd_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
                   result.config = {responsive: true};
                   Plotly.react('psd_graph', result, {});;
               }
           });
       }
 
-      function generate_compare_graph(selection, compare_value) {
+      function generate_compare_graph(selection, compare_value, freq) {
           $.getJSON({
-              url: "/compare_graph", data: { 'data': selection, "compare_value": compare_value }, success: function (result) {
+              url: "/compare_graph", data: { 'data': selection, "compare_value": compare_value, 'freq': freq }, success: function (result) {
                   result.config = {responsive: true};
                   Plotly.react('compare_graph', result, {});;
               }
@@ -85,11 +85,25 @@ h2{
   clear: both;
 }
 
+.freq {
+  text-align: center;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+
+}
 
 </style>
 
 <div class="container">
   <h2>Offshore Wind Turbine Monitoring Dashboard</h2>
+  <freq>
+    <h3>Current Frequency: <span id="current_frequency"></span> Hz</h3>
+  </freq>
+  <input type="text" id="freq" name="freq" onchange="update_graphs(this.value)">
+  <br>
+  <br>
+  <br>
 
   <!-- Real-Time Data
   <div class="panel-group">
@@ -220,10 +234,18 @@ h2{
 </div>
 
 <script type="text/javascript">
+  function update_graphs(freq){
+    generate_time_graph(freq);
+    generate_fft_graph(freq);
+    generate_psd_graph(freq);
+    generate_compare_graph(freq,"a_x_t")
+    document.getElementById("current_frequency").textContent = freq
+  }
   generate_time_graph("1600");
   generate_fft_graph("1600");
   generate_psd_graph("1600");
   generate_compare_graph("1600","a_x_t")
+  document.getElementById("current_frequency").textContent = frequency
 
   function resize_graph() {
     console.log("working");
