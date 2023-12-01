@@ -14,7 +14,7 @@
           $.getJSON({
               url: "/time_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
                   result.config = {responsive: true};
-                  Plotly.react('time_domain_graph', result, {});;
+                  Plotly.react('time_domain_graph', result);
               }
           });
       }
@@ -23,7 +23,7 @@
           $.getJSON({
               url: "/fft_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
                   result.config = {responsive: true};
-                  Plotly.react('fft_graph', result, {});;
+                  Plotly.react('fft_graph', result);
               }
           });
       }
@@ -32,7 +32,7 @@
           $.getJSON({
               url: "/psd_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
                   result.config = {responsive: true};
-                  Plotly.react('psd_graph', result, {});;
+                  Plotly.react('psd_graph', result);
               }
           });
       }
@@ -41,7 +41,7 @@
           $.getJSON({
               url: "/compare_graph", data: { 'data': selection, "compare_value": compare_value, 'freq': freq }, success: function (result) {
                   result.config = {responsive: true};
-                  Plotly.react('compare_graph', result, {});;
+                  Plotly.react('compare_graph', result);
               }
           });
       }
@@ -104,7 +104,7 @@ h2{
     <option value="1600">1600Hz</option>
     <option value="100">100Hz</option>
   </select>
-  <button onclick=" toggle()">Refresh</button>
+  <button onclick="toggle()">Refresh</button>
   <br>
   <br>
 
@@ -244,7 +244,7 @@ h2{
     generate_psd_graph(freq);
     generate_compare_graph(freq,$("#compare_panel").val());
     document.getElementById("current_frequency").textContent = freq;
-    console.log("Updating graphs at ", freq);
+    console.log("Updating graphs at", freq);
   }
   update_graphs("1600");
   // Enable to get interval data
