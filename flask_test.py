@@ -92,6 +92,7 @@ def time_graph():
 @app.route('/fft_graph', methods=['POST', 'GET'])
 def fft_graph():
     data = request.args.get('data')
+    print(data)
     # Sometimes crashes on first load of the graph
     # https://community.plotly.com/t/valueerror-invalid-value-in-basedatatypes-py/55993/6
     try:
@@ -163,7 +164,8 @@ def generate_compare_time_graph(freq, compare_value):
     graph_JSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return graph_JSON
 
-def generate_compare_fft_graph(freq, compare_value, fs = 1):
+def generate_compare_fft_graph(freq, compare_value):
+    fs = int(freq)
     # Parse data
     df = parse_data(freq)
     df_reference = parse_data(freq, reference = True)
@@ -206,9 +208,10 @@ def generate_compare_fft_graph(freq, compare_value, fs = 1):
     return graph_JSON
 
 
-def generate_compare_psd_graph(freq, compare_value, fs = 1):
+def generate_compare_psd_graph(freq, compare_value):
     # Parse data
     df = parse_data(freq)
+    fs = int(freq)
     df_reference = parse_data(freq, reference = True)
     # Get column index for the corresponding compare_value
     column_name_index = None
@@ -255,7 +258,8 @@ def generate_time_json(freq='1600'):
     graph_JSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return graph_JSON
 
-def generate_fft_json(freq='1600', fs = 1):
+def generate_fft_json(freq='1600'):
+    fs = int(freq)
     # Parse data and convert to numpy for fft analysis
     df = parse_data(freq)
     data = df.to_numpy()
@@ -267,6 +271,10 @@ def generate_fft_json(freq='1600', fs = 1):
     fft_data[:, 1:] *= 2
 
     fft_x = np.fft.rfftfreq(len(data), 1/fs)
+
+    # Skip DC point - MAKES GRAPH READABLE MAY NOT BE VALID
+    fft_x = fft_x[1:]
+    fft_data = fft_data[:, 1:]
     
     fft_df = pd.DataFrame({df.columns[i]: fft_data[i] for i in range(len(fft_data))})
     fft_fig = px.line(fft_df, x=fft_x, y=fft_df.columns, labels={"x": "Freq [Hz]"}, title="|FFT|")
@@ -274,7 +282,8 @@ def generate_fft_json(freq='1600', fs = 1):
     return graph_JSON
 
 
-def generate_psd_json(freq='1600', fs = 1):
+def generate_psd_json(freq='1600'):
+    fs = int(freq)
     # Parse data and convert to numpy for fft analysis
     df = parse_data(freq)
     data = df.to_numpy()
@@ -298,4 +307,4 @@ def generate_psd_json(freq='1600', fs = 1):
     return graph_JSON
 
 # Run flask
-app.run(debug=False)
+app.run(debug=False, use_evalex=False, host='0.0.0.0')

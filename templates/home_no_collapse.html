@@ -149,92 +149,40 @@ h2{
   -->
 
   <!-- Time Domain -->
-  <div class="panel-group" id = "time-group">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#time" onclick="resize_graph()">Time Domain</a>
-        </h4>
-      </div>
-      <div id="time" class="panel-collapse collapse">
-        <!-- Time Domain Panel Information-->
-        <div class="panel-body">
-          <div id="time_domain_graph"></div>
-        </div>
-      </div>
-    </div>
-  </div>  
+  <h1>Time Domain</h1>
+  <div id="time_domain_graph"></div>
 
   <!-- FFT -->
-  <div class="panel-group">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#fft" onclick="resize_graph()">Fast Fourier Transform (FFT)</a>
-        </h4>
-      </div>
-      <div id="fft" class="panel-collapse collapse">
-        <!-- FFT Panel Information-->
-        <div class="panel-body">
-          <div id="fft_graph"></div>
-        </div>
-      </div>
-    </div>
-  </div>  
+  <h1>FFT</h1>
+  <div id="fft_graph"></div>
 
   <!-- PSD -->
-  <div class="panel-group">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#psd" onclick="resize_graph()">Power Spectral Density (PSD)</a>
-        </h4>
-      </div>
-      <div id="psd" class="panel-collapse collapse">
-        <!-- PSD Information-->
-        <div class="panel-body">
-          <div id="psd_graph"></div>
-        </div>
-      </div>
-    </div>
-  </div> 
+  <h1>PSD</h1>
+  <div id="psd_graph"></div>
 
   <!-- Compare -->
-  <div class="panel-group">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#compare" onclick="resize_graph()">Compare With Old Sample</a>
-        </h4>
-      </div>
-      <div id="compare" class="panel-collapse collapse">
-        <!-- Compare Information-->
-        <div class="panel-body">
-          <select name="compare_panel" id="compare_panel" onchange="generate_compare_graph('1600', this.value)">
-            <option value="a_x_t">Acceleration X Time</option>
-            <option value="a_y_t">Acceleration Y Time</option>
-            <option value="a_z_t">Acceleration Z Time</option>
-            <option value="g_x_t">Gyro X Time</option>
-            <option value="g_y_t">Gyro Y Time</option>
-            <option value="g_z_t">Gyro Z Time</option>
-            <option value="a_x_fft">Acceleration X FFT</option>
-            <option value="a_y_fft">Acceleration Y FFT</option>
-            <option value="a_z_fft">Acceleration Z FFT</option>
-            <option value="g_x_fft">Gyro X FFT</option>
-            <option value="g_y_fft">Gyro Y FFT</option>
-            <option value="g_z_fft">Gyro Z FFT</option>
-            <option value="a_x_psd">Acceleration X PSD</option>
-            <option value="a_y_psd">Acceleration Y PSD</option>
-            <option value="a_z_psd">Acceleration Z PSD</option>
-            <option value="g_x_psd">Gyro X PSD</option>
-            <option value="g_y_psd">Gyro Y PSD</option>
-            <option value="g_z_psd">Gyro Z PSD</option>
-          </select>
-          <div id="compare_graph"></div>
-        </div>
-      </div>
-    </div>
-  </div> 
+  <h1>Compare</h1>
+  <select name="compare_panel" id="compare_panel" onchange="generate_compare_graph('1600', this.value)">
+    <option value="a_x_t">Acceleration X Time</option>
+    <option value="a_y_t">Acceleration Y Time</option>
+    <option value="a_z_t">Acceleration Z Time</option>
+    <option value="g_x_t">Gyro X Time</option>
+    <option value="g_y_t">Gyro Y Time</option>
+    <option value="g_z_t">Gyro Z Time</option>
+    <option value="a_x_fft">Acceleration X FFT</option>
+    <option value="a_y_fft">Acceleration Y FFT</option>
+    <option value="a_z_fft">Acceleration Z FFT</option>
+    <option value="g_x_fft">Gyro X FFT</option>
+    <option value="g_y_fft">Gyro Y FFT</option>
+    <option value="g_z_fft">Gyro Z FFT</option>
+    <option value="a_x_psd">Acceleration X PSD</option>
+    <option value="a_y_psd">Acceleration Y PSD</option>
+    <option value="a_z_psd">Acceleration Z PSD</option>
+    <option value="g_x_psd">Gyro X PSD</option>
+    <option value="g_y_psd">Gyro Y PSD</option>
+    <option value="g_z_psd">Gyro Z PSD</option>
+  </select>
+  <div id="compare_graph"></div>
 </div>
 
 <script type="text/javascript">
@@ -247,9 +195,7 @@ h2{
     console.log("Updating graphs at ", freq);
   }
   update_graphs("1600");
-  // Enable to get interval data
-  setInterval(() => toggle(), 12000);
-
+  //setInterval(() => update_graphs($("#freq").val()), 12000);
   function toggle(){
     update_graphs($('#freq').val());
     update_graphs($('#freq').val());
