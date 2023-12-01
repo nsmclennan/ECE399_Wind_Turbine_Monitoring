@@ -307,4 +307,5 @@ def generate_psd_json(freq='1600'):
     return graph_JSON
 
 # Run flask
-app.run(debug=False, use_evalex=False, host='0.0.0.0')
+app.run(debug=False)
+#app.run(debug=False, use_evalex=False, host='0.0.0.0')

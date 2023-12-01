@@ -162,7 +162,7 @@ h2{
 
   <!-- Compare -->
   <h1>Compare</h1>
-  <select name="compare_panel" id="compare_panel" onchange="generate_compare_graph('1600', this.value)">
+  <select name="compare_panel" id="compare_panel" onchange="generate_two_update()">
     <option value="a_x_t">Acceleration X Time</option>
     <option value="a_y_t">Acceleration Y Time</option>
     <option value="a_z_t">Acceleration Z Time</option>
@@ -195,6 +195,11 @@ h2{
     console.log("Updating graphs at ", freq);
   }
   update_graphs("1600");
+
+  function generate_two_update(){
+    generate_compare_graph(freq,$("#compare_panel").val());
+    generate_compare_graph(freq,$("#compare_panel").val());
+  }
   //setInterval(() => update_graphs($("#freq").val()), 12000);
   function toggle(){
     update_graphs($('#freq').val());

@@ -100,7 +100,7 @@ h2{
   <freq>
     <h3>Current Frequency: <span id="current_frequency"></span> Hz</h3>
   </freq>
-  <select name="freq" id="freq" onchange="update_graphs(this.value)">
+  <select name="freq" id="freq" onchange="toggle()">
     <option value="1600">1600Hz</option>
     <option value="100">100Hz</option>
   </select>
@@ -210,7 +210,7 @@ h2{
       <div id="compare" class="panel-collapse collapse">
         <!-- Compare Information-->
         <div class="panel-body">
-          <select name="compare_panel" id="compare_panel" onchange="generate_compare_graph('1600', this.value)">
+          <select name="compare_panel" id="compare_panel" onchange="generate_two_update()">
             <option value="a_x_t">Acceleration X Time</option>
             <option value="a_y_t">Acceleration Y Time</option>
             <option value="a_z_t">Acceleration Z Time</option>
@@ -248,10 +248,16 @@ h2{
   }
   update_graphs("1600");
   // Enable to get interval data
-  setInterval(() => toggle(), 12000);
+  //setInterval(() => toggle(), 12000);
 
+  function generate_two_update(){
+    generate_compare_graph($("#freq").val(),$("#compare_panel").val());
+    generate_compare_graph($("#freq").val(),$("#compare_panel").val());
+  }
   function toggle(){
     update_graphs($('#freq').val());
+    //Can reload the page, but collapses all boxes.
+    //location.reload()
     update_graphs($('#freq').val());
   }
   function resize_graph() {
