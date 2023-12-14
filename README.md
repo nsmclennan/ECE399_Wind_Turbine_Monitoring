@@ -4,10 +4,11 @@ ECE 399 project to monitor wind turbine vibrations. This uses a Pico W to collec
 
 ## Structure
 
-- `final_code` contains the code for the complete project
-- `testing` contains the code for the Python back-end testing, front-end, and web server testing.
+- `final_code` contains the server code for the complete project.
+- `pico_code` contains the code used by the Pi Pico W.
+- `testing` contains the code used for testing the back-end, front-end, Pico W, and BMI160 IMU.
 - `diagrams` contains the data pipeline flowcharts for the project.
-- `old` contains out of date code using in the development of the project.
+- `old` contains out of date code used in the development of the project.
 
 ## Dashboard
 
