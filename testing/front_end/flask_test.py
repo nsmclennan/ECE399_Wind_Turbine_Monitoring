@@ -136,11 +136,13 @@ def select_compare_graph(freq, compare_value):
     return graph_JSON
 
 def get_compare_column_index(df, compare_value):
-    # Get column index for the corresponding compare_value
+    # Get column index or indices for the corresponding compare_value
+    indices = []
     for col_index, col in enumerate(df.columns):
         if col[0] in compare_value.split("_")[COMPARE_VALUE_TYPE_INDEX].upper(): # Get the a/g
             if col.split(maxsplit=1)[-1][0] in compare_value.split("_")[COMPARE_VALUE_AXIS_INDEX].upper(): # Get the x/y/z
-                return col_index # Get the index to pull from df
+                indices.append(col_index) # Get the index of the target column in the df
+    return indices
 
 def generate_compare_time_graph(freq, compare_value):
     # Parse data
@@ -150,7 +152,7 @@ def generate_compare_time_graph(freq, compare_value):
 
     # Select target columns and combine
     column_name_index = get_compare_column_index(df, compare_value)
-    df = pd.concat([df[df.columns[column_name_index]], df_reference[df_reference.columns[[column_name_index, -1]]]], axis=1)
+    df = pd.concat([df[df.columns[column_name_index]], df_reference[df_reference.columns[[*column_name_index, -1]]]], axis=1)
 
     fig = px.line(df, x=df.columns[-1], y=df.columns[:-1], title="Time Domain")
 
@@ -165,7 +167,7 @@ def generate_compare_fft_graph(freq, compare_value):
 
     # Select target columns and combine
     column_name_index = get_compare_column_index(df, compare_value)
-    df = pd.concat([df[df.columns[column_name_index]], df_reference[df_reference.columns[[column_name_index, -1]]]], axis=1)
+    df = pd.concat([df[df.columns[column_name_index]], df_reference[df_reference.columns[[*column_name_index, -1]]]], axis=1)
 
     # Convert to numpy for FFT analysis
     data = df.to_numpy()
@@ -196,7 +198,7 @@ def generate_compare_psd_graph(freq, compare_value):
 
     # Select target columns and combine
     column_name_index = get_compare_column_index(df, compare_value)
-    df = pd.concat([df[df.columns[column_name_index]], df_reference[df_reference.columns[[column_name_index, -1]]]], axis=1)
+    df = pd.concat([df[df.columns[column_name_index]], df_reference[df_reference.columns[[*column_name_index, -1]]]], axis=1)
 
     # Convert to numpy for PSD analysis
     data = df.to_numpy()
