@@ -8,52 +8,46 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
-    let frequency = "1600"
-    // SetInterval() to get it to generate during an interval
-      function generate_time_graph(selection, freq) {
-          $.getJSON({
-              url: "/time_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
-                  result.config = {responsive: true};
-                  Plotly.react('time_domain_graph', result);
-              }
-          });
-      }
-
-      function generate_fft_graph(selection, freq) {
-          $.getJSON({
-              url: "/fft_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
-                  result.config = {responsive: true};
-                  Plotly.react('fft_graph', result);
-              }
-          });
-      }
-
-      function generate_psd_graph(selection, freq) {
-          $.getJSON({
-              url: "/psd_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
-                  result.config = {responsive: true};
-                  Plotly.react('psd_graph', result);
-              }
-          });
-      }
-
-      function generate_compare_graph(selection, compare_value, freq) {
-          $.getJSON({
-              url: "/compare_graph", data: { 'data': selection, "compare_value": compare_value, 'freq': freq }, success: function (result) {
-                  result.config = {responsive: true};
-                  Plotly.react('compare_graph', result);
-              }
-          });
-      }
+    let frequency = "1600";
+    function generate_time_graph(selection, freq) {
+        $.getJSON({
+            url: "/time_graph", data: { 'data': selection, 'freq': freq }, success: (result) => {
+                result.config = {responsive: true};
+                Plotly.react('time_domain_graph', result);
+            }
+        });
+    }
+    function generate_fft_graph(selection, freq) {
+        $.getJSON({
+            url: "/fft_graph", data: { 'data': selection, 'freq': freq }, success: (result) => {
+                result.config = {responsive: true};
+                Plotly.react('fft_graph', result);
+            }
+        });
+    }
+    function generate_psd_graph(selection, freq) {
+        $.getJSON({
+            url: "/psd_graph", data: { 'data': selection, 'freq': freq }, success: (result) => {
+                result.config = {responsive: true};
+                Plotly.react('psd_graph', result);
+            }
+        });
+    }
+    function generate_compare_graph(selection, compare_value, freq) {
+        $.getJSON({
+            url: "/compare_graph", data: { 'data': selection, "compare_value": compare_value, 'freq': freq }, success: (result) => {
+                result.config = {responsive: true};
+                Plotly.react('compare_graph', result);
+            }
+        });
+    }
   </script>
-
 </head>
 <body>
 
 <style>
-
 /*Center title */
-h2{
+h2 {
   text-align: center;  
 }
 
@@ -92,7 +86,6 @@ h2{
   justify-content: center;
 
 }
-
 </style>
 
 <div class="container">
@@ -107,46 +100,6 @@ h2{
   <button onclick="toggle()">Refresh</button>
   <br>
   <br>
-
-
-  <!-- Real-Time Data
-  <div class="panel-group">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#realtime">Real-Time Data - Probably Remove</a>
-        </h4>
-      </div>
-      <div id="realtime" class="panel-collapse collapse">
-        Real Time Data Panel Information
-        <div class="panel-body">
-            <div class="row">
-              <div class="column">
-                <h2>Sensor Time</h2>
-                <p>Time (s): info</p>
-              </div>
-              <div class="column">
-                <h2>Accelerometer</h2>
-                <p>
-                  X (g): info<br>
-                  Y (g): info<br>
-                  Z (g): info
-                </p>
-              </div>
-              <div class="column">
-                <h2>Gyroscope</h2>
-                <p>
-                  X (deg/s): info<br>
-                  Y (deg/s): info<br>
-                  Z (deg/s): info
-                </p>
-              </div>
-            </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  -->
 
   <!-- Time Domain -->
   <div class="panel-group" id = "time-group">
@@ -238,7 +191,7 @@ h2{
 </div>
 
 <script type="text/javascript">
-  function update_graphs(freq){
+  function update_graphs(freq) {
     generate_time_graph(freq);
     generate_fft_graph(freq);
     generate_psd_graph(freq);
@@ -250,13 +203,13 @@ h2{
   // Enable to get interval data
   //setInterval(() => toggle(), 12000);
 
-  function generate_two_update(){
+  function generate_two_update() {
     generate_compare_graph($("#freq").val(),$("#compare_panel").val());
     generate_compare_graph($("#freq").val(),$("#compare_panel").val());
   }
-  function toggle(){
+  function toggle() {
     update_graphs($('#freq').val());
-    //Can reload the page, but collapses all boxes.
+    // Can reload the page, but collapses all boxes.
     //location.reload()
     update_graphs($('#freq').val());
   }
@@ -264,7 +217,6 @@ h2{
     window.dispatchEvent(new Event('resize'));
   }
 </script>
-
 
 </body>
 </html>

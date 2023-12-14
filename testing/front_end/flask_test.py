@@ -8,7 +8,6 @@ import plotly.express as px
 import plotly
 import json
 import scipy.signal as signal
-# Simulate Data
 
 # Flask Implementation
 app = Flask(__name__)
@@ -41,7 +40,7 @@ def upload(freq, end_time=None):
 
     return '', 200
 
-def parse_data(freq, reference = False):
+def parse_data(freq, reference=False):
     # If new sample data
     if not reference:
         data_path = "data/sample_"
@@ -51,7 +50,6 @@ def parse_data(freq, reference = False):
     with open(data_path + str(freq) + ".raw", "rb") as file:
         raw_data = file.read()
 
-    
     data = []
     for i in range(len(raw_data)//12):
         gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z = unpack_from("<hhhhhh", raw_data, i*12)
@@ -130,9 +128,9 @@ def select_compare_graph(freq, compare_value):
     graph_JSON = None
     if "_t" in compare_value: # Time domain analysis
         graph_JSON = generate_compare_time_graph(freq, compare_value)
-    elif "_fft" in compare_value: # fft analysis
+    elif "_fft" in compare_value: # FFT analysis
         graph_JSON = generate_compare_fft_graph(freq, compare_value)
-    elif "_psd" in compare_value: # psd analysis
+    elif "_psd" in compare_value: # PSD analysis
         graph_JSON = generate_compare_psd_graph(freq, compare_value)
 
     return graph_JSON
@@ -140,15 +138,15 @@ def select_compare_graph(freq, compare_value):
 def get_compare_column_index(df, compare_value):
     # Get column index for the corresponding compare_value
     for col_index, col in enumerate(df.columns):
-        if compare_value.split("_")[COMPARE_VALUE_TYPE_INDEX].upper() in col: # Get the a/g
-            if compare_value.split("_")[COMPARE_VALUE_AXIS_INDEX].upper() in col: # Get the x/y/z
+        if col[0] in compare_value.split("_")[COMPARE_VALUE_TYPE_INDEX].upper(): # Get the a/g
+            if col.split(maxsplit=1)[-1][0] in compare_value.split("_")[COMPARE_VALUE_AXIS_INDEX].upper(): # Get the x/y/z
                 return col_index # Get the index to pull from df
 
 def generate_compare_time_graph(freq, compare_value):
     # Parse data
     df = parse_data(freq)
     # Parse reference data
-    df_reference = parse_data(freq, reference = True)
+    df_reference = parse_data(freq, reference=True)
 
     # Select target columns and combine
     column_name_index = get_compare_column_index(df, compare_value)
@@ -163,13 +161,13 @@ def generate_compare_fft_graph(freq, compare_value):
     freq = int(freq)
     # Parse data
     df = parse_data(freq)
-    df_reference = parse_data(freq, reference = True)
+    df_reference = parse_data(freq, reference=True)
 
     # Select target columns and combine
     column_name_index = get_compare_column_index(df, compare_value)
     df = pd.concat([df[df.columns[column_name_index]], df_reference[df_reference.columns[[column_name_index, -1]]]], axis=1)
 
-    # Convert to numpy for fft analysis
+    # Convert to numpy for FFT analysis
     data = df.to_numpy()
 
     fft_data = np.transpose(np.fft.rfft(data[:, :-1], axis=0, norm="forward")) # Display traces for all params (normalized by length)
@@ -194,13 +192,13 @@ def generate_compare_psd_graph(freq, compare_value):
     freq = int(freq)
     # Parse data
     df = parse_data(freq)
-    df_reference = parse_data(freq, reference = True)
+    df_reference = parse_data(freq, reference=True)
 
     # Select target columns and combine
     column_name_index = get_compare_column_index(df, compare_value)
     df = pd.concat([df[df.columns[column_name_index]], df_reference[df_reference.columns[[column_name_index, -1]]]], axis=1)
 
-    # Convert to numpy for psd analysis
+    # Convert to numpy for PSD analysis
     data = df.to_numpy()
     # PSD (Welch's method) for the desired bin width
     #bin_width = 0.05 # The desired frequency bin width in Hz (must be >= freq_step)
@@ -233,7 +231,7 @@ def generate_time_json(freq):
 
 def generate_fft_json(freq):
     freq = int(freq)
-    # Parse data and convert to numpy for fft analysis
+    # Parse data and convert to numpy for FFT analysis
     df = parse_data(freq)
     data = df.to_numpy()
 
@@ -257,7 +255,7 @@ def generate_fft_json(freq):
 
 def generate_psd_json(freq):
     freq = int(freq)
-    # Parse data and convert to numpy for psd analysis
+    # Parse data and convert to numpy for PSD analysis
     df = parse_data(freq)
     data = df.to_numpy()
     # PSD (Welch's method) for the desired bin width
@@ -280,5 +278,5 @@ def generate_psd_json(freq):
     return graph_JSON
 
 # Run flask
-#app.run(debug=True, use_evalex=False, host='0.0.0.0')
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True, use_evalex=False, host='0.0.0.0')
