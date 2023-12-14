@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    let frequency = "1600"
+    // SetInterval() to get it to generate during an interval
+      function generate_time_graph(selection, freq) {
+          $.getJSON({
+              url: "/time_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
+                  result.config = {responsive: true};
+                  Plotly.react('time_domain_graph', result);
+              }
+          });
+      }
+
+      function generate_fft_graph(selection, freq) {
+          $.getJSON({
+              url: "/fft_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
+                  result.config = {responsive: true};
+                  Plotly.react('fft_graph', result);
+              }
+          });
+      }
+
+      function generate_psd_graph(selection, freq) {
+          $.getJSON({
+              url: "/psd_graph", data: { 'data': selection, 'freq': freq }, success: function (result) {
+                  result.config = {responsive: true};
+                  Plotly.react('psd_graph', result);
+              }
+          });
+      }
+
+      function generate_compare_graph(selection, compare_value, freq) {
+          $.getJSON({
+              url: "/compare_graph", data: { 'data': selection, "compare_value": compare_value, 'freq': freq }, success: function (result) {
+                  result.config = {responsive: true};
+                  Plotly.react('compare_graph', result);
+              }
+          });
+      }
+  </script>
+
+</head>
+<body>
+
+<style>
+
+/*Center title */
+h2{
+  text-align: center;  
+}
+
+/*Center image*/
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+/*For Real-Time Data columns */
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.freq {
+  text-align: center;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+
+}
+
+</style>
+
+<div class="container">
+  <h2>Offshore Wind Turbine Monitoring Dashboard</h2>
+  <freq>
+    <h3>Current Frequency: <span id="current_frequency"></span> Hz</h3>
+  </freq>
+  <select name="freq" id="freq" onchange="toggle()">
+    <option value="1600">1600Hz</option>
+    <option value="100">100Hz</option>
+  </select>
+  <button onclick="toggle()">Refresh</button>
+  <br>
+  <br>
+
+
+  <!-- Real-Time Data
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#realtime">Real-Time Data - Probably Remove</a>
+        </h4>
+      </div>
+      <div id="realtime" class="panel-collapse collapse">
+        Real Time Data Panel Information
+        <div class="panel-body">
+            <div class="row">
+              <div class="column">
+                <h2>Sensor Time</h2>
+                <p>Time (s): info</p>
+              </div>
+              <div class="column">
+                <h2>Accelerometer</h2>
+                <p>
+                  X (g): info<br>
+                  Y (g): info<br>
+                  Z (g): info
+                </p>
+              </div>
+              <div class="column">
+                <h2>Gyroscope</h2>
+                <p>
+                  X (deg/s): info<br>
+                  Y (deg/s): info<br>
+                  Z (deg/s): info
+                </p>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  -->
+
+  <!-- Time Domain -->
+  <div class="panel-group" id = "time-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#time" onclick="resize_graph()">Time Domain</a>
+        </h4>
+      </div>
+      <div id="time" class="panel-collapse collapse">
+        <!-- Time Domain Panel Information-->
+        <div class="panel-body">
+          <div id="time_domain_graph"></div>
+        </div>
+      </div>
+    </div>
+  </div>  
+
+  <!-- FFT -->
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#fft" onclick="resize_graph()">Fast Fourier Transform (FFT)</a>
+        </h4>
+      </div>
+      <div id="fft" class="panel-collapse collapse">
+        <!-- FFT Panel Information-->
+        <div class="panel-body">
+          <div id="fft_graph"></div>
+        </div>
+      </div>
+    </div>
+  </div>  
+
+  <!-- PSD -->
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#psd" onclick="resize_graph()">Power Spectral Density (PSD)</a>
+        </h4>
+      </div>
+      <div id="psd" class="panel-collapse collapse">
+        <!-- PSD Information-->
+        <div class="panel-body">
+          <div id="psd_graph"></div>
+        </div>
+      </div>
+    </div>
+  </div> 
+
+  <!-- Compare -->
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#compare" onclick="resize_graph()">Compare With Old Sample</a>
+        </h4>
+      </div>
+      <div id="compare" class="panel-collapse collapse">
+        <!-- Compare Information-->
+        <div class="panel-body">
+          <select name="compare_panel" id="compare_panel" onchange="generate_two_update()">
+            <option value="a_x_t">Acceleration X Time</option>
+            <option value="a_y_t">Acceleration Y Time</option>
+            <option value="a_z_t">Acceleration Z Time</option>
+            <option value="g_x_t">Gyro X Time</option>
+            <option value="g_y_t">Gyro Y Time</option>
+            <option value="g_z_t">Gyro Z Time</option>
+            <option value="a_x_fft">Acceleration X FFT</option>
+            <option value="a_y_fft">Acceleration Y FFT</option>
+            <option value="a_z_fft">Acceleration Z FFT</option>
+            <option value="g_x_fft">Gyro X FFT</option>
+            <option value="g_y_fft">Gyro Y FFT</option>
+            <option value="g_z_fft">Gyro Z FFT</option>
+            <option value="a_x_psd">Acceleration X PSD</option>
+            <option value="a_y_psd">Acceleration Y PSD</option>
+            <option value="a_z_psd">Acceleration Z PSD</option>
+            <option value="g_x_psd">Gyro X PSD</option>
+            <option value="g_y_psd">Gyro Y PSD</option>
+            <option value="g_z_psd">Gyro Z PSD</option>
+          </select>
+          <div id="compare_graph"></div>
+        </div>
+      </div>
+    </div>
+  </div> 
+</div>
+
+<script type="text/javascript">
+  function update_graphs(freq){
+    generate_time_graph(freq);
+    generate_fft_graph(freq);
+    generate_psd_graph(freq);
+    generate_compare_graph(freq,$("#compare_panel").val());
+    document.getElementById("current_frequency").textContent = freq;
+    console.log("Updating graphs at", freq);
+  }
+  update_graphs("1600");
+  // Enable to get interval data
+  //setInterval(() => toggle(), 12000);
+
+  function generate_two_update(){
+    generate_compare_graph($("#freq").val(),$("#compare_panel").val());
+    generate_compare_graph($("#freq").val(),$("#compare_panel").val());
+  }
+  function toggle(){
+    update_graphs($('#freq').val());
+    //Can reload the page, but collapses all boxes.
+    //location.reload()
+    update_graphs($('#freq').val());
+  }
+  function resize_graph() {
+    window.dispatchEvent(new Event('resize'));
+  }
+</script>
+
+
+</body>
+</html>
