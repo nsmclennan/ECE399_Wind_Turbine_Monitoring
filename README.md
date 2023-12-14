@@ -4,6 +4,6 @@ ECE 399 project to monitor wind turbine vibrations. This uses a Pico W to collec
 
 ## Structure
 
-'final_code' contains the code for the complete project
-'testing' contains the code for the Python back-end testing, front-end, and web server testing.
-'old' contains out of date code using in the development of the project.
+`final_code` contains the code for the complete project \
+`testing` contains the code for the Python back-end testing, front-end, and web server testing. \
+`old` contains out of date code using in the development of the project.
