@@ -9,6 +9,7 @@ ECE 399 project to monitor wind turbine vibrations. This uses a Pico W to collec
 - `testing` contains the code used for testing the back-end, front-end, Pico W, and BMI160 IMU.
 - `diagrams` contains the data pipeline flowcharts for the project.
 - `old` contains out of date code used in the development of the project.
+- `sample_graphs` contains sample grahs for comparison between a wind turbine with vibrations and running normally.
 
 ## Dashboard
 
